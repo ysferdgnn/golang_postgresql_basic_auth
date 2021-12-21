@@ -6,9 +6,9 @@ import (
 	"postgres/database/models"
 )
 
-func GetAllUsers() []models.Kullanici {
+func GetAllUsers() []models.User {
 
-	kullanici_listesi := make([]models.Kullanici, 1)
+	user_list := make([]models.User, 1)
 
 	database, err := handlers.SetupDB()
 
@@ -18,13 +18,13 @@ func GetAllUsers() []models.Kullanici {
 		if errorQ == nil {
 			for rows.Next() {
 				var id int
-				var ad string
+				var name string
 
-				rows.Scan(&id, &ad)
+				rows.Scan(&id, &name)
 
-				kullanici_tmp := models.Kullanici{Id: id, Ad: ad}
+				user_tmp := models.User{Id: id, Name: name}
 
-				kullanici_listesi = append(kullanici_listesi, kullanici_tmp)
+				user_list = append(user_list, user_tmp)
 			}
 		} else {
 			fmt.Println(errorQ.Error())
@@ -34,6 +34,6 @@ func GetAllUsers() []models.Kullanici {
 		fmt.Println(err.Error())
 	}
 
-	return kullanici_listesi
+	return user_list
 
 }
