@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"postgres/database/handlers"
 	"postgres/database/models"
+	"time"
 )
 
 func GetAllUsers() []models.User {
@@ -13,27 +14,30 @@ func GetAllUsers() []models.User {
 	database, err := handlers.SetupDB()
 
 	if err == nil {
-		rows, errorQ := database.Query("SELECT * FROM kullanici")
+		database.AutoMigrate(&models.User{})
 
-		if errorQ == nil {
-			for rows.Next() {
-				var id int
-				var name string
-
-				rows.Scan(&id, &name)
-
-				user_tmp := models.User{Id: id, Name: name}
-
-				user_list = append(user_list, user_tmp)
-			}
-		} else {
-			fmt.Println(errorQ.Error())
-		}
+		database.Model(&models.User{}).Take(&user_list)
 
 	} else {
-		fmt.Println(err.Error())
+		fmt.Print(err.Error())
+		panic(err.Error())
 	}
 
 	return user_list
+
+}
+func AddUser() {
+	database, err := handlers.SetupDB()
+
+	if err == nil {
+		database.AutoMigrate(&models.User{})
+
+		user := models.User{Name: "Yusuf", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+		database.Model(&models.User{}).Save(&user)
+
+	} else {
+		fmt.Print(err.Error())
+		panic(err.Error())
+	}
 
 }
